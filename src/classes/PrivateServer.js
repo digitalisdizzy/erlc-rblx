@@ -1,4 +1,5 @@
 const AppRequest = require("./AppRequest")
+const {DeepLinkFormats} = require("../enums")
 
 /**
  * @typedef {Object} ServerInfo
@@ -40,6 +41,7 @@ class PrivateServer {
     /**
      * 
      * @returns {Promise<ServerInfo>}
+     * @throws {import("../errors").ResponseNotOKError | import("../errors").ResponseNotValidError | import("../errors").RemovedFromQueueError | import("../errors").FullRequestQueueError | FetchError}
      */
     getInfo(queue=this.defaultQueue){
         return new Promise((resolve, reject) => {
@@ -50,11 +52,32 @@ class PrivateServer {
         })
     }
 
+    /**
+     * @returns {Promise<void>}
+     * @throws {import("../errors").ResponseNotOKError | import("../errors").ResponseNotValidError | import("../errors").RemovedFromQueueError | import("../errors").FullRequestQueueError | FetchError}
+     */
     sendCommand(command, queue=this.defaultQueue){
         return new Promise((resolve, reject) => {
             this.queueRequest(this.createAppRequest("v1/server/command", {queue, method: "post", body: {command: (command.startsWith(":") ? command : ":" + command)}})).then(() => {
                 resolve()
             }).catch(reject)
+        })
+    }
+
+    getDeepLink(format, queue){
+        return new Promise(async (resolve, reject) => {
+            const info = await this.getInfo(queue).catch(reject)
+            switch(format){
+                case DeepLinkFormats.Direct:
+                    resolve(`roblox://placeId=2534724415&launchData=${encodeURIComponent(JSON.stringify({psCode: info.joinCode}))}`)
+                    break
+                case DeepLinkFormats.ViaRobloxWeb:
+                    resolve(`https://www.roblox.com/games/start?placeId=2534724415&launchData=${encodeURIComponent(JSON.stringify({psCode: info.joinCode}))}`)
+                    break
+                case DeepLinkFormats.ViaPRCWebsite:
+                    resolve(`https://policeroleplay.community/join/${info.joinCode}`)
+                    break
+            }
         })
     }
 }

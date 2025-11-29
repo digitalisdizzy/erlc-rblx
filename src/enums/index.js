@@ -1,3 +1,4 @@
 const AccountVerifcationRequirements = require("./AccountVerificationRequirements")
+const DeepLinkFormats = require("./DeepLinkFormats")
 
-module.exports = AccountVerifcationRequirements
+module.exports = {AccountVerifcationRequirements, DeepLinkFormats}
