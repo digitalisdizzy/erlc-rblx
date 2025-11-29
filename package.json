@@ -1,0 +1,17 @@
+{
+  "name": "erlc-module",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/digitalisdizzy/erlc-module#readme",
+  "bugs": {
+    "url": "https://github.com/digitalisdizzy/erlc-module/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/digitalisdizzy/erlc-module.git"
+  },
+  "license": "UNLICENSED",
+  "author": "digitalisdizzy",
+  "type": "commonjs",
+  "main": "index.js"
+}
