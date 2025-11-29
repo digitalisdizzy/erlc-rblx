@@ -13,6 +13,61 @@ const {DeepLinkFormats} = require("../enums")
  * @prop {boolean} autoTeamBalanceEnabled Whether the setting that automatically balances teams are enabled. Note that the civilian team is never limited.
  */
 
+/**
+ * @typedef {Object} Player
+ * @prop {string} username
+ * @prop {number} userId
+ * @prop {"Normal" | "Server Administrator" | "Server Owner" | "Server Moderator"} permissionLevel
+ * @prop {string | null} callsign
+ * @prop {"Civilian" | "Sheriff" | "Fire" | "Police" | "DOT"} team
+ */
+
+/**
+ * @typedef {Object} JoinLog
+ * @prop {boolean} logType
+ * @prop {Date} date
+ * @prop {string} username
+ * @prop {number} userId
+ */
+
+/**
+ * @typedef {Object} KillLog
+ * @prop {string} killedUsername
+ * @prop {number} killedUserId
+ * @prop {string} killerUsername
+ * @prop {number} killerUserId
+ * @prop {Date} date
+ */
+
+/**
+ * @typedef {Object} CommandLog
+ * @prop {string} moderatorUsername
+ * @prop {number} moderatorUserId
+ * @prop {string} command
+ */
+
+/**
+ * @typedef {Object} ModCallLog
+ * @prop {string} callerUsername
+ * @prop {number} callerUserId
+ * @prop {boolean} responded
+ * @prop {string} moderatorUsername
+ * @prop {number} moderatorUserId
+ * @prop {Date} date
+ */
+
+/**
+ * @typedef {Object} BannedPlayer
+ * @prop {string} username
+ * @prop {number} userId
+ */
+
+/**
+ * @typedef {Object} Vehicle
+ * @prop {string} texture
+ * @prop {string} vehicleName
+ * @prop {string} ownerUsername
+ */
 
 class PrivateServer {
     /** @type {import("./App")} */
