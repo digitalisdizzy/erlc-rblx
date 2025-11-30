@@ -35,6 +35,8 @@ class App extends EventEmitter {
     /** @type {Object<string,number>} The last request time per queue */
     lastRequestsUnix = {main: 0}
     
+    /** @type {boolean} Whether the App will keep the Node.js process running when `willSendRequests` is `true`. It's a good idea to turn this off if this script is a one-off.  */
+    keepAliveWhileSendingRequests = true
     keepRunningInterval
 
     constructor(authorizationKey=null){
@@ -155,7 +157,7 @@ class App extends EventEmitter {
     startQueue(queue="main"){
         this.willSendRequests[queue] = true
         this.advanceQueue(queue)
-        if(!this.keepRunningInterval){
+        if(!this.keepRunningInterval && this.keepAliveWhileSendingRequests){
             this.keepRunningInterval = setInterval(() => {}, 1 << 30)
         }
     }
@@ -169,7 +171,7 @@ class App extends EventEmitter {
                 break
             }
         }
-        if(!anyActive){
+        if(!anyActive && this.keepRunningInterval){
             clearInterval(this.keepRunningInterval)
         }
     }
