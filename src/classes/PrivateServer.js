@@ -15,64 +15,64 @@ const {DeepLinkFormats} = require("../enums")
 
 /**
  * @typedef {Object} Player
- * @prop {string} username
- * @prop {number} userId
- * @prop {"Normal" | "Server Administrator" | "Server Owner" | "Server Moderator"} permissionLevel
- * @prop {string | null} callsign
- * @prop {"Civilian" | "Sheriff" | "Fire" | "Police" | "DOT"} team
+ * @prop {string} username The player's username
+ * @prop {number} userId The player's Roblox user ID
+ * @prop {"Normal" | "Server Administrator" | "Server Owner" | "Server Moderator"} permissionLevel The player's permission level. See the enum `PermissionLevels`
+ * @prop {string | null} callsign The player's callsign on their team. `null` if they are on the Civilian team.
+ * @prop {"Civilian" | "Sheriff" | "Fire" | "Police" | "DOT"} team The player's team. See the enum `Teams`
  */
 
 /**
  * @typedef {Object} JoinLog
- * @prop {boolean} logType
- * @prop {Date} date
- * @prop {string} username
- * @prop {number} userId
- * @prop {string} fingerprint
+ * @prop {boolean} logType The type of log (leave or join). See the enum `JoinLogType`
+ * @prop {Date} date A Date object representing when this log occured
+ * @prop {string} username The username of of the player the log refers to
+ * @prop {number} userId The Roblox user ID of the player the log refers to
+ * @prop {string} fingerprint A unique identifier for this log. Be aware that (extremely rarely) this fingerprint can be the same as another log.
  */
 
 /**
  * @typedef {Object} KillLog
- * @prop {string} killedUsername
- * @prop {number} killedUserId
- * @prop {string} killerUsername
- * @prop {number} killerUserId
- * @prop {Date} date
- * @prop {string} fingerprint
+ * @prop {string} killedUsername The username of the player that was killed
+ * @prop {number} killedUserId The Roblox user ID of the player that was killed
+ * @prop {string} killerUsername The username of the killer
+ * @prop {number} killerUserId The Roblox user ID of the player that was killed
+ * @prop {Date} date A Date object representing when this log occured
+ * @prop {string} fingerprint A unique identifier for this log. Be aware that (extremely rarely) this fingerprint can be the same as another log.
  */
 
 /**
  * @typedef {Object} CommandLog
- * @prop {string} moderatorUsername
- * @prop {number} moderatorUserId
- * @prop {string} command
- * @prop {boolean} isRemoteServer
- * @prop {string} fingerprint
- * @prop {Date} date
+ * @prop {string} moderatorUsername The username of the moderator that ran the command
+ * @prop {number} moderatorUserId The Roblox user ID of the moderator that ran the command. `-1` if it was ran by a Remote Server
+ * @prop {string} command The full command that was executed, e.g. ":h Hello World!"
+ * @prop {boolean} isRemoteServer Whether the command was run via the API
+ * @prop {string} fingerprint A unique identifier for this log. Be aware that (extremely rarely) this fingerprint can be the same as another log.
+ * @prop {Date} date A Date object representing when this log occured
  */
 
 /**
  * @typedef {Object} ModCallLog
- * @prop {string} callerUsername
- * @prop {number} callerUserId
- * @prop {boolean} responded
- * @prop {string} moderatorUsername
- * @prop {number} moderatorUserId
- * @prop {Date} date
- * @prop {string} fingerprint
+ * @prop {string} callerUsername The username of the player that called for a moderator
+ * @prop {number} callerUserId The user ID of the player that called for a moderator
+ * @prop {boolean} responded Whether the mod call has been responded to
+ * @prop {string | null} moderatorUsername The username of the moderator that responded to the call. `null` if nobody has responded yet.
+ * @prop {number | null} moderatorUserId The Roblox user ID of the mdoerator that responded to the call. `null` if nobodt has responded yet
+ * @prop {Date} date A Date object representing when this log occured
+ * @prop {string} fingerprint A unique identifier for this log. Be aware that (extremely rarely) this fingerprint can be the same as another log.
  */
 
 /**
  * @typedef {Object} BannedPlayer
- * @prop {string} username
- * @prop {number} userId
+ * @prop {string} username The username of the banned player
+ * @prop {number} userId The Roblox user ID of the banned player
  */
 
 /**
  * @typedef {Object} Vehicle
- * @prop {string} texture
- * @prop {string} vehicleName
- * @prop {string} ownerUsername
+ * @prop {string} texture The texture of the vehicle
+ * @prop {string} vehicleName The model of the vehicle
+ * @prop {string} ownerUsername The username of the vehicle's owner
  */
 
 function createFingerprint(string){
