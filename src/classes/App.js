@@ -165,7 +165,7 @@ class App extends EventEmitter {
     stopQueue(queue="main"){
         this.willSendRequests[queue] = false
         let anyActive = false
-        for(queueName in this.willSendRequests){
+        for(let queueName in this.willSendRequests){
             if(this.willSendRequests[queueName]){
                 anyActive = true
                 break

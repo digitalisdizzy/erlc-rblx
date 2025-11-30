@@ -82,7 +82,7 @@ function createFingerprint(string){
         hash |= 0; // Constrain to 32bit integer
     }
 
-    return btoa(hash.toString(16))
+    return Buffer.from(hash.toString(16)).toString("base64")
 }
 
 class PrivateServer {
@@ -196,9 +196,9 @@ class PrivateServer {
                 const logs = []
                 r.forEach(log => {
                     if(log.Player == "Remote Server"){
-                        logs.push({username: "RemoteServer", userId: -1, date: new Date(log.Timestamp * 1000), command: log.Command, fingerprint: createFingerprint(`${log.Player}${log.Timestamp}${log.Command}`), isRemoteServer: true})
+                        logs.push({moderatorUsername: "RemoteServer", moderatorUserId: -1, date: new Date(log.Timestamp * 1000), command: log.Command, fingerprint: createFingerprint(`${log.Player}${log.Timestamp}${log.Command}`), isRemoteServer: true})
                     } else {
-                        logs.push({username: log.Player.split(":")[0], userId: Number(log.Player.split(":")[1]), date: new Date(log.Timestamp * 1000), command: log.Command, fingerprint: createFingerprint(`${log.Player}${log.Timestamp}${log.Command}`), isRemoteServer: false})
+                        logs.push({moderatorUsername: log.Player.split(":")[0], moderatorUserId: Number(log.Player.split(":")[1]), date: new Date(log.Timestamp * 1000), command: log.Command, fingerprint: createFingerprint(`${log.Player}${log.Timestamp}${log.Command}`), isRemoteServer: false})
                     }
                 })
                 resolve(logs)
@@ -233,7 +233,7 @@ class PrivateServer {
             this.queueRequest(this.createAppRequest("v1/server/bans", {queue})).then(r => {
                 const logs = []
                 for(const userId in r){
-                    logs.push({username: r[userId], userId: userId})
+                    logs.push({username: r[userId], userId: Number(userId)})
                 }
                 resolve(logs)
             }).catch(reject)
@@ -280,17 +280,22 @@ class PrivateServer {
      */
     getDeepLink(format, queue){
         return new Promise(async (resolve, reject) => {
-            const info = await this.getInfo(queue).catch(reject)
-            switch(format){
-                case DeepLinkFormats.Direct:
-                    resolve(`roblox://placeId=2534724415&launchData=${encodeURIComponent(JSON.stringify({psCode: info.joinCode}))}`)
-                    break
-                case DeepLinkFormats.ViaRobloxWeb:
-                    resolve(`https://www.roblox.com/games/start?placeId=2534724415&launchData=${encodeURIComponent(JSON.stringify({psCode: info.joinCode}))}`)
-                    break
-                case DeepLinkFormats.ViaPRCWebsite:
-                    resolve(`https://policeroleplay.community/join/${info.joinCode}`)
-                    break
+            try {
+                const info = await this.getInfo(queue)
+                switch(format){
+                    case DeepLinkFormats.Direct:
+                        resolve(`roblox://placeId=2534724415&launchData=${encodeURIComponent(JSON.stringify({psCode: info.joinCode}))}`)
+                        break
+                    case DeepLinkFormats.ViaRobloxWeb:
+                        resolve(`https://www.roblox.com/games/start?placeId=2534724415&launchData=${encodeURIComponent(JSON.stringify({psCode: info.joinCode}))}`)
+                        break
+                    case DeepLinkFormats.ViaPRCWebsite:
+                        resolve(`https://policeroleplay.community/join/${info.joinCode}`)
+                        break
+                }
+            } catch(err) {
+                reject(err)
+                return
             }
         })
     }
