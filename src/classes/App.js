@@ -34,6 +34,8 @@ class App extends EventEmitter {
     maxQueueLengths = {main: -1}
     /** @type {Object<string,number>} The last request time per queue */
     lastRequestsUnix = {main: 0}
+    
+    keepRunningInterval
 
     constructor(authorizationKey=null){
         super()
@@ -153,10 +155,23 @@ class App extends EventEmitter {
     startQueue(queue="main"){
         this.willSendRequests[queue] = true
         this.advanceQueue(queue)
+        if(!this.keepRunningInterval){
+            this.keepRunningInterval = setInterval(() => {}, 1 << 30)
+        }
     }
 
     stopQueue(queue="main"){
         this.willSendRequests[queue] = false
+        let anyActive = false
+        for(queueName in this.willSendRequests){
+            if(this.willSendRequests[queueName]){
+                anyActive = true
+                break
+            }
+        }
+        if(!anyActive){
+            clearInterval(this.keepRunningInterval)
+        }
     }
 
     stopAndClearQueue(queue="main"){

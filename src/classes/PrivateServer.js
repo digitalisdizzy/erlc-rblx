@@ -28,6 +28,7 @@ const {DeepLinkFormats} = require("../enums")
  * @prop {Date} date
  * @prop {string} username
  * @prop {number} userId
+ * @prop {string} fingerprint
  */
 
 /**
@@ -37,6 +38,7 @@ const {DeepLinkFormats} = require("../enums")
  * @prop {string} killerUsername
  * @prop {number} killerUserId
  * @prop {Date} date
+ * @prop {string} fingerprint
  */
 
 /**
@@ -44,6 +46,9 @@ const {DeepLinkFormats} = require("../enums")
  * @prop {string} moderatorUsername
  * @prop {number} moderatorUserId
  * @prop {string} command
+ * @prop {boolean} isRemoteServer
+ * @prop {string} fingerprint
+ * @prop {Date} date
  */
 
 /**
@@ -54,6 +59,7 @@ const {DeepLinkFormats} = require("../enums")
  * @prop {string} moderatorUsername
  * @prop {number} moderatorUserId
  * @prop {Date} date
+ * @prop {string} fingerprint
  */
 
 /**
@@ -68,6 +74,16 @@ const {DeepLinkFormats} = require("../enums")
  * @prop {string} vehicleName
  * @prop {string} ownerUsername
  */
+
+function createFingerprint(string){
+    let hash = 0;
+    for (const char of string) {
+        hash = (hash << 5) - hash + char.charCodeAt(0);
+        hash |= 0; // Constrain to 32bit integer
+    }
+
+    return btoa(hash.toString(16))
+}
 
 class PrivateServer {
     /** @type {import("./App")} */
@@ -96,7 +112,6 @@ class PrivateServer {
     /**
      * 
      * @returns {Promise<ServerInfo>}
-     * @throws {import("../errors").ResponseNotOKError | import("../errors").ResponseNotValidError | import("../errors").RemovedFromQueueError | import("../errors").FullRequestQueueError | FetchError}
      */
     getInfo(queue=this.defaultQueue){
         return new Promise((resolve, reject) => {
@@ -108,8 +123,133 @@ class PrivateServer {
     }
 
     /**
+     * 
+     * @returns {Promise<Player[]>}
+     */
+    getPlayers(queue=this.defaultQueue){
+        return new Promise((resolve, reject) => {
+            this.queueRequest(this.createAppRequest("v1/server/players", {queue})).then(r => {
+                const players = []
+                r.forEach(plr => {
+                    players.push({username: plr.Player.split(":")[0], userId: Number(plr.Player.split(":")[1]), permissionLevel: plr.Permission, callsign: plr.Callsign || null, team: plr.Team})
+                });
+                resolve(players)
+            }).catch(reject)
+        })
+    }
+
+    /**
+     * 
+     * @returns {Promise<JoinLog[]>}
+     */
+    getJoinLogs(queue=this.defaultQueue){
+        return new Promise((resolve, reject) => {
+            this.queueRequest(this.createAppRequest("v1/server/joinlogs", {queue})).then(r => {
+                const logs = []
+                r.forEach(log => {
+                    logs.push({username: log.Player.split(":")[0], userId: Number(log.Player.split(":")[1]), date: new Date(log.Timestamp * 1000), logType: log.Join, fingerprint: createFingerprint(`${log.Player}${log.Timestamp}${log.Join}`)})
+                });
+                resolve(logs)
+            }).catch(reject)
+        })
+    }
+
+    /**
+     * 
+     * @returns {Promise<number[]>}
+     */
+    getQueue(queue=this.defaultQueue){
+        return new Promise((resolve, reject) => {
+            this.queueRequest(this.createAppRequest("v1/server/queue", {queue})).then(resolve).catch(reject)
+        })
+    }
+
+    /**
+     * 
+     * @returns {Promise<KillLog[]>}
+     */
+    getKillLogs(queue=this.defaultQueue){
+        return new Promise((resolve, reject) => {
+            this.queueRequest(this.createAppRequest("v1/server/killlogs", {queue})).then(r => {
+                const logs = []
+                r.forEach(log => {
+                    logs.push({killerUsername: log.Killer.split(":")[0], killerUserId: Number(log.Killer.split(":")[1]), date: new Date(log.Timestamp * 1000), killedUsername: log.Killed.split(":")[0], killedUserId: Number(log.Killed.split(":")[1]), fingerprint: createFingerprint(`${log.Killed}${log.Killer}${log.Timestamp}`)})
+                });
+                resolve(logs)
+            }).catch(reject)
+        })
+    }
+
+    /**
+     * 
+     * @returns {Promise<CommandLog[]>}
+     */
+    getCommandLogs(queue=this.defaultQueue){
+        return new Promise((resolve, reject) => {
+            this.queueRequest(this.createAppRequest("v1/server/commandlogs", {queue})).then(r => {
+                const logs = []
+                r.forEach(log => {
+                    if(log.Player == "Remote Server"){
+                        logs.push({username: "RemoteServer", userId: -1, date: new Date(log.Timestamp * 1000), command: log.Command, fingerprint: createFingerprint(`${log.Player}${log.Timestamp}${log.Command}`), isRemoteServer: true})
+                    } else {
+                        logs.push({username: log.Player.split(":")[0], userId: Number(log.Player.split(":")[1]), date: new Date(log.Timestamp * 1000), command: log.Command, fingerprint: createFingerprint(`${log.Player}${log.Timestamp}${log.Command}`), isRemoteServer: false})
+                    }
+                })
+                resolve(logs)
+            }).catch(reject)
+        })
+    }
+
+    /**
+     * 
+     * @returns {Promise<ModCallLog[]>}
+     */
+    getModCallLogs(queue=this.defaultQueue){
+        return new Promise((resolve, reject) => {
+            this.queueRequest(this.createAppRequest("v1/server/modcalls", {queue})).then(r => {
+                const logs = []
+                r.forEach(log => {
+                    logs.push({callerUsername: log.Caller.split(":")[0], callerUserId: Number(log.Caller.split(":")[1]), moderatorUsername: log.Moderator?.split(":")[0] || null, moderatorUserId: Number(log.Moderator?.split(":")[1]) || null, date: new Date(log.Timestamp * 1000), responded: !!log.Moderator, fingerprint: createFingerprint(`${log.Caller}${log.Timestamp}`)})
+                });
+                resolve(logs)
+            }).catch(reject)
+        })
+    }
+
+    /**
+     * 
+     * @returns {Promise<BannedPlayer[]>}
+     */
+    getBannedPlayers(queue=this.defaultQueue){
+        return new Promise((resolve, reject) => {
+            this.queueRequest(this.createAppRequest("v1/server/bans", {queue})).then(r => {
+                const logs = []
+                for(const userId in r){
+                    logs.push({username: r[userId], userId: userId})
+                }
+                resolve(logs)
+            }).catch(reject)
+        })
+    }
+
+    /**
+     * 
+     * @returns {Promise<Vehicle[]>}
+     */
+    getVehicles(queue=this.defaultQueue){
+        return new Promise((resolve, reject) => {
+            this.queueRequest(this.createAppRequest("v1/server/vehicles", {queue})).then(r => {
+                const logs = []
+                r.forEach(log => {
+                    logs.push({texture: log.Texture, vehicleName: log.Name, ownerUsername: log.Owner})
+                });
+                resolve(logs)
+            }).catch(reject)
+        })
+    }
+
+    /**
      * @returns {Promise<void>}
-     * @throws {import("../errors").ResponseNotOKError | import("../errors").ResponseNotValidError | import("../errors").RemovedFromQueueError | import("../errors").FullRequestQueueError | FetchError}
      */
     sendCommand(command, queue=this.defaultQueue){
         return new Promise((resolve, reject) => {
