@@ -1,7 +1,7 @@
 const App = require("./src/classes/App")
 const AppRequest = require("./src/classes/AppRequest")
 const {FullRequestQueueError, RemovedFromQueueError, ResponseNotOKError, ResponseNotValidError} = require("./src/errors")
-const {AccountVerifcationRequirements, DeepLinkFormats} = require("./src/enums")
+const {AccountVerifcationRequirements, DeepLinkFormats, JoinLogTypes, Teams, PermissionLevels} = require("./src/enums")
 
 module.exports = {
     App,
@@ -13,5 +13,8 @@ module.exports = {
     ResponseNotValidError,
 
     AccountVerifcationRequirements,
-    DeepLinkFormats
+    DeepLinkFormats,
+    JoinLogTypes,
+    Teams,
+    PermissionLevels
 }

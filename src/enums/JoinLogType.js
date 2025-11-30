@@ -3,7 +3,9 @@
  * @enum {boolean}
  * @readonly
  */
-const DeepLinkFormats = {
+const JoinLogType = {
     Join: true,
     Leave: false
 }
+
+module.exports = JoinLogType
