@@ -10,7 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/digitalisdizzy/erlc-module.git"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "author": "digitalisdizzy",
   "type": "commonjs",
   "main": "index.js"
