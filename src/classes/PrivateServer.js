@@ -86,11 +86,11 @@ function createFingerprint(string){
 }
 
 class PrivateServer {
-    /** @type {import("./App")} */
+    /** @type {import("./App")} The App that manages this server */
     app
-    /** @type {string} */
+    /** @type {string} The server's API key */
     serverKey
-    /** @type {string} */
+    /** @type {string} The queue that requests will be sent to if one is not specified */
     defaultQueue = "main"
 
     constructor(app, serverKey){
@@ -110,7 +110,8 @@ class PrivateServer {
     }
 
     /**
-     * 
+     * Get the private server's information, including owner, co-owners, name, join code, and other important settings.
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<ServerInfo>}
      */
     getInfo(queue=this.defaultQueue){
@@ -123,7 +124,8 @@ class PrivateServer {
     }
 
     /**
-     * 
+     * Get an array of all players in the server
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<Player[]>}
      */
     getPlayers(queue=this.defaultQueue){
@@ -139,7 +141,8 @@ class PrivateServer {
     }
 
     /**
-     * 
+     * Get an array of the recent join logs for this server
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<JoinLog[]>}
      */
     getJoinLogs(queue=this.defaultQueue){
@@ -155,7 +158,8 @@ class PrivateServer {
     }
 
     /**
-     * 
+     * Get an array containing the user IDs of all players in the server's queue
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<number[]>}
      */
     getQueue(queue=this.defaultQueue){
@@ -165,7 +169,8 @@ class PrivateServer {
     }
 
     /**
-     * 
+     * Get an array of the recent kill logs for this server
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<KillLog[]>}
      */
     getKillLogs(queue=this.defaultQueue){
@@ -181,7 +186,8 @@ class PrivateServer {
     }
 
     /**
-     * 
+     * Get an array of the recent command logs for this server
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<CommandLog[]>}
      */
     getCommandLogs(queue=this.defaultQueue){
@@ -201,7 +207,8 @@ class PrivateServer {
     }
 
     /**
-     * 
+     * Get an array of all of the recent mod calls for this server
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<ModCallLog[]>}
      */
     getModCallLogs(queue=this.defaultQueue){
@@ -217,7 +224,8 @@ class PrivateServer {
     }
 
     /**
-     * 
+     * Get an array of all of the banned players in this server
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<BannedPlayer[]>}
      */
     getBannedPlayers(queue=this.defaultQueue){
@@ -233,7 +241,8 @@ class PrivateServer {
     }
 
     /**
-     * 
+     * Get an array of all of the currently spawned vehicles in the server
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<Vehicle[]>}
      */
     getVehicles(queue=this.defaultQueue){
@@ -249,6 +258,9 @@ class PrivateServer {
     }
 
     /**
+     * Send a command to the server
+     * @param {string} command The command string to send to the server. Can include or exclude the colon prefix.
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
      * @returns {Promise<void>}
      */
     sendCommand(command, queue=this.defaultQueue){
@@ -259,6 +271,13 @@ class PrivateServer {
         })
     }
 
+    /**
+     * Get a link that automatically opens Roblox and sends the user to the private server
+     * See {@link https://create.roblox.com/docs/production/promotion/deeplinks} for more information
+     * @param {string} format The format to get the deep link in. See the enum `DeepLinkFormats`
+     * @param {string} [queue] The queue to send the request to. Will use `PrivateServer.defaultQueue` if not specified.
+     * @returns {string} The deep link in the requested format
+     */
     getDeepLink(format, queue){
         return new Promise(async (resolve, reject) => {
             const info = await this.getInfo(queue).catch(reject)

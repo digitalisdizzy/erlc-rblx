@@ -1,5 +1,5 @@
 /**
- * See further information about these at https://create.roblox.com/docs/production/promotion/deeplinks
+ * See further information about these at {@link https://create.roblox.com/docs/production/promotion/deeplinks}
  * @enum {string}
  * @readonly
  */
