@@ -196,6 +196,25 @@ class App extends EventEmitter {
         this.maxQueueLengths[queueName] = maxQueueLength
         this.lastRequestsUnix[queueName] = 0
     }
+
+    /**
+     * Resets the API key for this server. Since there is no documentation for this endpoint, only an unparsed response will be resolved.
+     * The API key for this App will also not be set to the new one.
+     * **Be careful using this.** If you want to reset your API key, it is best to use your own implementation.
+     * @returns {Promise<Response>}
+     */
+    resetAPIKey(){
+        return new Promise((resolve, reject) => {
+            fetch("https://policeroleplay.community/v1/api-key/reset", {method: "POST", headers: this.getHeaders("")}).then(r => {
+                if(!r.ok){
+                    reject(new ResponseNotOKError(r))
+                    return
+                }
+
+                resolve(r)
+            }).catch(reject)
+        })
+    }
 }
 
 module.exports = App
