@@ -2,6 +2,13 @@
 
 Interact with the [ER:LC API](https://apidoc.policeroleplay.community) with simple 429 prevention.
 
+## Installation
+Install erlc-rblx with NPM:
+
+```
+npm install erlc-rblx
+```
+
 ## Create an App
 An `App` is required to interact with the API. Create it like this:
 
