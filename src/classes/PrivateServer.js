@@ -1,5 +1,5 @@
 const AppRequest = require("./AppRequest")
-const {DeepLinkFormats} = require("../enums")
+const deepLinkFromJoinCode = require("../functions/deepLinkFromJoinCode")
 
 /**
  * @typedef {Object} ServerInfo
@@ -280,23 +280,9 @@ class PrivateServer {
      */
     getDeepLink(format, queue){
         return new Promise(async (resolve, reject) => {
-            try {
-                const info = await this.getInfo(queue)
-                switch(format){
-                    case DeepLinkFormats.Direct:
-                        resolve(`roblox://placeId=2534724415&launchData=${encodeURIComponent(JSON.stringify({psCode: info.joinCode}))}`)
-                        break
-                    case DeepLinkFormats.ViaRobloxWeb:
-                        resolve(`https://www.roblox.com/games/start?placeId=2534724415&launchData=${encodeURIComponent(JSON.stringify({psCode: info.joinCode}))}`)
-                        break
-                    case DeepLinkFormats.ViaPRCWebsite:
-                        resolve(`https://policeroleplay.community/join/${info.joinCode}`)
-                        break
-                }
-            } catch(err) {
-                reject(err)
-                return
-            }
+            this.getInfo(queue).then(info => {
+                resolve(deepLinkFromJoinCode(info.joinCode))
+            }).catch(reject)
         })
     }
 }
