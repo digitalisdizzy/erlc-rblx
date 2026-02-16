@@ -7,7 +7,7 @@ const AccountVerifcationRequirements = {
     None: "Disabled",
     /** The player must have their account linked and verified to an email to join the server */
     Email: "Email",
-    /** The player must either have a phone number link and verified to a phone number or must have verified their age with government ID to join the server */
+    /** The player must either have their account linked and verified to a phone number or must have verified their age with government ID to join the server */
     PhoneOrId: "Phone/ID"
 }
 
